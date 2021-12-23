@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>좌표로 주소를 얻어내기</title>
+    <style>
+    .map_wrap {position:relative;width:100%;height:350px;}
+    .title {font-weight:bold;display:block;}
+    .hAddr {position:absolute;left:10px;top:10px;border-radius: 2px;background:#fff;background:rgba(255,255,255,0.8);z-index:1;padding:5px;}
+    #centerAddr {display:block;margin-top:2px;font-weight: normal;}
+    .bAddr {padding:5px;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}
+</style>
+</head>
+<body>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=d9a09f146a2fd8158e849d8f01f841c8"></script>
+<script>
+    var geocoder = new kakao.maps.services.Geocoder();
+
+var coord = new kakao.maps.LatLng(37.56496830314491, 126.93990862062978);
+var callback = function(result, status) {
+    if (status === kakao.maps.services.Status.OK) {
+        console.log('그런 너를 마주칠까 ' + result[0].address.address_name + '을 못가');
+    }
+};
+
+geocoder.coord2Address(coord.getLng(), coord.getLat(), callback);
+</script>
+</body>
+</html>

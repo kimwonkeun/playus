@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous"></script>
+    <style>
+ 
+.navbar {
+  position: relative;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  -ms-flex-align: center;
+  align-items: center;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  padding: 0rem 0.2rem;  
+  background: linear-gradient( to right, rgb(255, 210, 210), rgb(255, 200, 200) );  
+  font-size:small;
+}
+.card-header {
+  font-size:x-large;
+  padding: 0.2rem 0.25rem;
+  margin-bottom: 0;
+  background: rgb(255, 252, 249);
+  border-bottom: 1px dotted rgba(0, 0, 0, 0.125);
+}
+.card-body {
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+  height: 9em;
+  padding: 0.25rem;  
+}
+.card-footer {
+  text-align: right;
+  font-size: small;
+  padding: 0.2rem 0.25rem;  
+  background: rgb(255, 253, 251);
+  border-top: 1px dotted rgba(0, 0, 0, 0.125);
+}
+
+ol.carousel-indicators {
+  position: absolute;
+  bottom: 0;
+  margin: 1px;  
+  left: 0;
+  right: 0;
+  width: auto; 
+}
+
+ol.carousel-indicators li,
+ol.carousel-indicators li.active{
+  float: left;
+  width: 5px;
+  height: 5px;
+  margin: 3px;
+  border: 0; 
+  border-radius: 50%; 
+  transition: opacity 0.1s ease;
+}
+
+ol.carousel-indicators li.active {
+  background: rgb(255, 187, 187);
+  
+}
+.otherplace{
+  background-color: rgb(255, 203, 144);
+  text-align: center;
+  font-size:small;
+  color:white;
+  font-weight: 400;
+  border-bottom: none;
+}
+.otherplace:hover{
+  background-color: rgb(255, 72, 72);
+
+}
+a{
+  color:black;
+  text-decoration: none;
+}
+body{
+  padding-top:20px;
+}
+</style>
+
+<script>
+  
+</script>
+</head>
+<body>  
+  {% for playdata in outputTable %}
+    <div class="card text-dark bg-white m-1 p-0 shadow">
+        <div class="card-header">{{playdata.title}}</div><a href="/detail/{{playdata.pk}}">
+        {% comment %} <div id="mycarousel" class="carousel slide card-body m-0 p-0"  data-ride="carousel" >
+            <ol class="carousel-indicators">
+                <li data-target="#mycarousel" data-slide-to="0" class="active"></li>
+                <li data-target="#mycarousel" data-slide-to="1"></li>               
+              </ol>
+            <div class="carousel-inner">
+              <div class="carousel-item active">               {% endcomment %}
+                <div class="card-body" >                   
+                    <p class="card-text">{{playdata.detail}}<br>모이는 시간: {{playdata.starttime}}</p>
+                </div>            
+              {% comment %} <div class="carousel-item">
+                <div class="card-body">                    
+                    <p class="card-text"></p>
+                  </div>
+              </div>             {% endcomment %}            
+          </a>       
+    </div>
+    {% endfor %}
+</body>
+<footer class="fixed-top">
+  <a href="/findbymap/{{gpsX}}/{{gpsY}}/4"><div class="otherplace">지도로 보기</div></a>
+    </footer>
+</html>

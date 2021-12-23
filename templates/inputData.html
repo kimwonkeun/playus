@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous"></script>
+    <style>
+.card-header {
+  font-size:xx-large;
+  padding: 0.2rem 0.25rem;
+  margin-bottom: 0;
+  background: seashell;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+.card-body {
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+  height: 9em;
+  padding: 0.25rem;  
+}
+.card-footer {
+  text-align: right;
+  font-size: small;
+  padding: 0.2rem 0.25rem;  
+  background: seashell;
+  border-top: 1px solid rgba(0, 0, 0, 0.125);
+}
+.list-group-item {
+    position: relative;
+    display: flex;
+    padding: 0.4rem 0.6rem;
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    align-items: center;
+  }
+label{
+  width: 8rem;
+  font-size: small;
+}
+.btn{
+  background-color: rgb(255, 134, 159);
+  border: 0px;
+}
+.btn:hover{
+  background-color: rgb(230, 194, 79);
+}
+#map{
+    border-radius: 10% 5% 20% 2%;
+    border: solid 1px grey;
+}
+</style>
+</head>
+{% if form.errors %}
+  <script>
+    $(document).ready(function() {
+   $("#info").modal("show");});
+ </script>
+  <div class="modal fade" id="info" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">  
+       <div class="modal-dialog" role="document">
+        <div class="modal-content"> 
+          <div class="modal-body">             
+              <h7>모든 자료를 넣어주세요. 카카오톡 오픈채팅방을 등록안하시면 다른 분과 소통을 할 수가 없습니다.
+            </h7>
+         </div>
+         <div class="modal-footer  m-0 p-0">
+           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>          
+         </div>
+       </div>
+     </div>
+   </div>
+{% endif %}
+<body>
+  
+   <form method="post" action="/inputplaydata">
+  {% csrf_token %} 
+    <div class="card shadow">
+        <div class="card-header">
+        <input class="form-control" name="title" type="text" placeholder="놀이 제목을 넣어주세요">        
+        </div>       
+          <input type="hidden" name="uniqueid" value="{{playerdata.uniqueid}}">
+          <input type="hidden" name="gpsX" id='gpsX' value="{{gpsX}}">
+          <input type="hidden" name="gpsY" id='gpsY' value="{{gpsY}}">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item"><label>모일 시간</label>
+            <input class="form-control" type="datetime-local" name='startdate'></li>
+          <li class="list-group-item"><textarea name='detail' class="form-control" rows="3" placeholder="놀이를 설명해주세요"></textarea></li>
+          <li class="list-group-item"><input class="form-control" name='kakaochat' type="text" placeholder="카카오 오픈 채팅을 넣어주세요" value="{{playerdata.kakaochat}}" ></li>
+          <li class="list-group-item">
+            <div id="map" style="width:100%;height:280px;"></div>
+          </li>
+          <li class="list-group-item">
+            <div id="clickLatlng">모이실 장소를 선택하세요</div>
+            </li>          
+        </ul>
+        <div class="card-footer">
+            <button type="submit" class="btn btn-danger btn-lg btn-block">등록하기</button>
+        </div></form>
+    </div>
+    
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=d9a09f146a2fd8158e849d8f01f841c8"></script>
+<script>
+
+var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+    mapOption = { 
+        center: new kakao.maps.LatLng({{gpsX}},{{gpsY}}), // 지도의 중심좌표
+        level: 3 // 지도의 확대 레벨
+    };
+
+var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+
+// 지도를 클릭한 위치에 표출할 마커입니다
+var marker = new kakao.maps.Marker({ 
+    // 지도 중심좌표에 마커를 생성합니다 
+    position: map.getCenter() 
+}); 
+// 지도에 마커를 표시합니다
+marker.setMap(map);
+//지오코드
+
+
+// 지도에 클릭 이벤트를 등록합니다
+// 지도를 클릭하면 마지막 파라미터로 넘어온 함수를 호출합니다
+kakao.maps.event.addListener(map, 'click', function(mouseEvent) {        
+    
+  // 클릭한 위도, 경도 정보를 가져옵니다 
+  var latlng = mouseEvent.latLng; 
+  
+  // 마커 위치를 클릭한 위치로 옮깁니다
+  marker.setPosition(latlng);
+  
+  var message = latlng.getLat()+":";
+  message += latlng.getLng();
+  
+  var resultX = document.getElementById('gpsX'); 
+  var resultY = document.getElementById('gpsY');    
+  resultX.value = latlng.getLat();
+  resultY.value = latlng.getLng();
+  document.getElementById('clickLatlng').innerHTML=message;
+});
+</script>
+
+
+</body>
+</html>

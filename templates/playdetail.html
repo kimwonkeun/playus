@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>놀이정보</title>
+</head>
+<script>
+    function inputgossip(){
+        var gossipdata=document.getElementById('gossiptext').value;
+            if(gossipdata!=null){
+                window.location.href = "/inputgossip/" + gossipdata+"/"+{{playdata.pk}};
+            }
+            else{}
+    }
+
+</script>
+<style>
+    .playdetail{
+        background-color: rgb(255, 255, 255);
+        border:solid 1px grey;
+        border-radius: 20px 10px 5px 3px;
+        box-shadow: 2px 2px 2px grey;                
+    }
+    .title{
+        background-color: rgb(255, 230, 230);
+        border-radius: 20px 10px 0 0;
+        text-align: center;                
+    }
+    .when{        
+        height:21px;
+        font-size: large;        
+        margin:5px;
+        text-align:right;
+        margin-bottom: 0px;
+    }
+    .party{         
+        border-top:1px dotted grey;
+        margin-bottom: 10px;            
+        padding: 10px;
+        padding-bottom: 10px;
+        border-bottom: 1px dotted grey;      
+        }
+    .partytitle{
+        width:30%;
+        background-color: tomato;
+        border-radius: 20px 20px 0 0;
+        border:solid 1px grey;
+        text-align: center;
+        color: white;
+        font-size: small;
+    }
+    .partyplayer{
+        border-radius: 20px 20px 1px 10px;
+        height:70px;
+        background-color: violet;
+        text-align: center;        
+        color:white;
+        border:dotted 1px rebeccapurple;
+        padding:3px;
+    }
+    .partyplayer_m{
+        border-radius: 20px 20px 1px 10px;
+        height:70px;
+        background-color: rgb(152, 238, 130);
+        text-align: center;        
+        color:white;
+        border:dotted 1px rgb(54, 153, 51);
+        padding:3px;
+    }
+    #map{
+        border-radius: 55px 10px 55px 5px;
+        border:dotted 2px grey;
+        width: 95%;
+        height: 200px;
+        margin:5px 5px 5px 5px;
+
+    }
+    .infochat{
+        text-align: right;
+        border-top:1px dotted grey;
+        height:30px;
+        
+    }
+    .gossip{               
+     
+    }
+    .gossipdetail{
+        background-color: wheat;                
+        border-radius: 20px 20px 20px 0px;
+        margin-left: 1px;        
+        margin-top: 0px;
+        padding: 5px;
+        display: inline-block;
+        height:30px;        
+        margin-bottom: 2px;
+    }
+    a{
+        border:1px solid rgb(255, 100, 100);
+        border-top: 0px;
+        text-decoration-line: none;
+        border-radius: 0 0 10px 10px;
+        background-color: rgb(255, 120, 120);
+        color:white;
+        text-align: center;
+        font-size: small; 
+        margin: 5px;    
+        padding: 3px;  
+    }
+    a:hover{
+        background-color: tomato;
+    }
+    .gossipinput{
+        text-align: right;
+        border:none;
+        float: right;        
+        width:75%;
+        height:25px;      
+        border-radius: 20px 0px 15px 20px;
+        padding-left: 10px;
+        margin-left: 5px;
+        margin-right: 5px;
+        background-color: rgb(255, 220, 220);
+        padding-bottom: 10px;  
+        margin-bottom: 5px; 
+        border: dashed 1px grey;
+    }
+    h6{
+        margin: 1px;
+    }
+    br{
+        margin: 0;
+        padding: 0;        
+    }  
+    .partyin{
+        border-radius: 20px 10px 2px 20px;
+        border:solid 1px grey;        
+        padding: 5px;
+        width:100px;        
+        color: black;
+    }
+    .partyin:hover{
+        background-color: rgb(255, 142, 229);        
+        color:white;
+    }
+</style>
+<body>
+    <div class="playdetail">
+        <div class="title">{{playdata.title}}</div>
+        <div class="when">{{playdata.starttime}}</div>
+        <div class="partytitle">참여인원</div>                    
+        <div class="party">
+            {% for output in partydata%}
+                {% if output.p_gender == "여자" %}
+                    <span class="partyplayer">{{output.p_nick}}</span>
+                {% else %}
+                    <span class="partyplayer_m">{{output.p_nick}}</span>
+                {% endif %}
+            {% endfor %} 
+            {% if show == 1 %}
+            <form method="post" action="/partyin">                   
+                {% csrf_token %}
+                <input type="hidden" name="nick" value="{{nick}}">
+                <input type="hidden" name="gender" value="{{gender}}">
+                <input type="hidden" name="userid" value="{{userid}}">
+                <input type="hidden" name="playdata_id" value="{{playdata.pk}}">                
+            <button type="submit" class="partyin">+ 빈자리</button>
+            </form>
+            {% endif %}
+
+        </div>  
+        <div id="map"></div>
+        <div class="infochat"><a href="{{playdata.kakaochat}}">오픈채팅 입장</a>
+        <a href="kakaomap://look?p={{playdata.gpsX}},{{playdata.gpsY}}">가는길 확인</a></div>
+        <div class="gossip">
+            <input class="gossipinput" type="text"  placeholder="알림사항을 넣어주세요" id="gossiptext" onchange="inputgossip()">
+            <div>
+            {% for output in gossipdata %}
+                <h6 class="gossipdetail">{{output.gossip}}<br>-{{output.nickname}}</h6>            
+            {% endfor %}
+            </div>
+        </div>    
+    </div>
+    
+    
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=d9a09f146a2fd8158e849d8f01f841c8"></script>
+
+<script> 
+    var markerPosition  = new kakao.maps.LatLng({{playdata.gpsX}},{{playdata.gpsY}}); 
+
+    // 이미지 지도에 표시할 마커입니다
+    // 이미지 지도에 표시할 마커는 Object 형태입니다
+    var marker = {
+        position: markerPosition
+    };
+    
+    var staticMapContainer  = document.getElementById('map'), // 이미지 지도를 표시할 div  
+        staticMapOption = { 
+            center: new kakao.maps.LatLng({{playdata.gpsX}},{{playdata.gpsY}}), // 이미지 지도의 중심좌표
+            level: 4, // 이미지 지도의 확대 레벨
+            marker: marker // 이미지 지도에 표시할 마커 
+        };    
+    
+    // 이미지 지도를 생성합니다
+    var staticMap = new kakao.maps.StaticMap(staticMapContainer, staticMapOption);
+</script>
+</body>
+</html>

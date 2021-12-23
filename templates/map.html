@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>지도로 놀이 검색</title>
+    
+</head>
+<style>
+    #map{
+        width:100%;
+        height:36rem;
+        border:dotted 1px black;
+        border-radius: 0% 1% 0% 0%;
+    }
+    .detaildata{
+        background:rgb(255, 218, 218);              
+        border-radius:15px 15px 15px 1px;
+        position:relative;
+        border:solid rgb(255, 56, 56) 1px;
+        font-size:smaller;
+        text-align:center;
+        padding:2px;
+        float:left;
+    }
+
+    #find{
+        width:100%;
+        color:white;
+        background: rgb(255, 123, 90);
+        border-radius:0 0 20px 20px;
+        text-align: center;
+        border:dashed 1px grey;
+    }
+    #find:hover{
+        background-color: rgb(255, 151, 151);
+    }
+    a{
+        text-decoration-line: none;
+    }
+    .center{
+        border: 1px dashed red;
+        width:3px;
+        height:3px;
+        border-radius: 50%;        
+    }
+    .otherplace{
+        background-color: rgb(255, 203, 144);
+        text-align: center;
+        font-size:small;
+        color:white;
+        font-weight: 400;
+        border-bottom: none;
+        width:180px;
+        border:dashed 1px grey;
+        border-radius: 10px 5px 0px 0px;
+      }
+      .otherplace:hover{
+        background-color: rgb(255, 72, 72);
+      
+      }
+</style>
+<header class="fixed-top"><a href="/findbylist/{{gpsX}}/{{gpsY}}" ><div class="otherplace">가까운 지역 리스트로 보기</div></a></header>
+<body>
+    
+<!-- 이미지 지도를 표시할 div 입니다 -->
+<div id="map" ></div> 
+<a href="#" onclick="find()"><div id="find">이 지역 검색</div></a>
+
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=d9a09f146a2fd8158e849d8f01f841c8"></script>
+
+<script> 
+    var mapContainer = document.getElementById('map'), // 지도를 표시할 div  
+    mapOption = { 
+        center: new kakao.maps.LatLng({{gpsX}},{{gpsY}}), // 지도의 중심좌표
+        level: {{maplevel}} // 지도의 확대 레벨
+    };
+
+var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+ 
+// 마커를 표시할 위치와 내용을 가지고 있는 객체 배열입니다 
+var positions = [
+{% for outdata in playdata %}
+    {
+        content: '<a href="/detail/{{outdata.pk}}"><div class="detaildata">{{outdata.title}}</div></a>', 
+        latlng: new kakao.maps.LatLng({{outdata.gpsX}},{{outdata.gpsY}})
+    },
+{%endfor%}
+    {
+    content: '<div class="center"></div>', 
+    latlng: new kakao.maps.LatLng({{gpsX}},{{gpsY}})
+    }
+
+];
+
+for (var i = 0; i < positions.length; i ++) {
+
+    var infowindow = new kakao.maps.CustomOverlay({
+        position:positions[i].latlng,
+        content: positions[i].content // 인포윈도우에 표시할 내용
+    });    
+    infowindow.setMap(map);   
+}
+
+
+//위치 변동에 따른 지도 재검색
+var latlng;
+var level;
+kakao.maps.event.addListener(map, 'center_changed', function() {    
+    level = map.getLevel();
+    latlng = map.getCenter(); 
+});
+
+function find(){    
+        location.href = "/findbymap/"+latlng.getLat()+"/"+latlng.getLng()+"/"+level;   
+}
+
+</script>
+    
+</body>
+</html>
