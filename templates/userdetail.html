@@ -34,7 +34,7 @@ function replacekakao(){
     <div class="card mb-1 shadow">
         <div class="card-body p-1">
           <p class="card-text">별명 : {{playerdata.nickname}} 성별: {{playerdata.gender}}</p>   
-          <input id="kakaochat" class="form-control form-control-sm" type="text" placeholder="{{playerdata.kakaochat}}을 바꾸기" aria-label=".form-control-sm example" onchange="replacekakao()">
+          <a href="kakaoopen://home" target="_blank"><input id="kakaochat" class="form-control form-control-sm" type="text" placeholder="{{playerdata.kakaochat}}을 바꾸기" aria-label=".form-control-sm example" onchange="replacekakao()"></a>
         </div>
     </div>
   </div>

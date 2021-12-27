@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    input[type="text"]{
+        width:94%;
+        height:2rem;
+        border: palevioletred solid 1px;
+        border-radius: 10px;  
+    }  
+    table{
+        height:100%;        
+        padding-left: 3%;             
+    }
+    th{
+        padding-top:5px;
+        padding-bottom: 5px;
+    }
+    body{
+        background-color: rgb(170, 170, 170);
+    }
+    .lefttag{
+        background:rgb(255, 185, 185);
+        width:120px;       
+        height:100%;
+        float:left;   
+        border-radius: 10px 0 0 10px;       
+    }
+    .righttag{
+        height:100%;     
+        background: linear-gradient(to right,rgb(255, 185, 185), antiquewhite);             
+        border-radius: 10px;      
+    }
+    .usertag{
+        height:120px;
+        position: sticky;
+        top:33px;
+                 
+    }
+    .imgtag{
+        border-radius: 50%;       
+        margin:10px;
+        height:100px;
+        width: 100px;   
+        overflow: hidden;     
+        }
+    .imgthum{
+        width: 100%;
+        height:100%;
+        object-fit: cover;
+        }
+    .detailuser{        
+        height: 20rem;
+        width:100%;
+        background-color: rgb(102, 102, 255);
+        padding-top: 5px;  
+    }
+    .playdata{
+        height:40rem;
+        overflow-y: auto;
+        background-color: burlywood;
+    }
+    .head{
+        background-color: antiquewhite;
+        height:26px;
+        width:100%;   
+        text-decoration-line: none;                        
+        position: fixed;
+        top:0px;
+        left:0px;        
+        padding:3px
+    }
+    a{
+        width:30%;
+        height:20px;
+        border-radius: 50%;
+        border:solid 1px grey;
+        text-decoration-line: none;
+        color:red;
+    }
+</style>
+<script>
+    function replacekakao(){
+        const kakaochatvalue =document.getElementById('kakaochat').value;
+        window.location.href = '/changekakao?kakaochat='+kakaochatvalue;
+        }
+    function replacename(){
+        const nickname =document.getElementById('nickname').value;
+        window.location.href = '/changenick?nickname='+nickname;
+    }
+    </script>    
+<body> {% load static %}
+    <head><div class="head">사용자 정보<a href="finish:">X</a></div></head>
+    <div class="usertag">
+        <div class="lefttag">   
+            <div class="imgtag"><img src="{% static 'playus/female.png' %}" class="imgthum"></div>            
+        </div>
+        <div class="righttag">
+        <table>
+            <tr><th>
+        <input type="text" name="nickname" placeholder="{{outdata.nickname}} 바꾸기" id="nickname" onchange="replacename()"/></th></tr>
+            <tr><th>
+        <a href="kakaoopen://home" target="_blank"><input type="text" name="kakaochat" id="kakaochat" placeholder="{{outdata.kakaochat}} 바꾸기" onchange="replacekakao()"/></a></th></tr>
+        </table>
+        </div>
+    </div>
+    <br>    
+    <div class="detailuser">          
+        유저상세정보입력 (서비스 예정)
+    </div>
+
+    <div class="playdata">
+        참여했던 놀이 목록(서비스 예정)
+    </div>   
+
+
+    
+    
+    
+</body>
+</html>

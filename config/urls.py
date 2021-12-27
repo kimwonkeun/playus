@@ -26,6 +26,7 @@ urlpatterns = [
     path('login/',views.login), #로그인시
     path('detail/<int:pk>/',views.detail,name='detail'), #놀이 상세보기
     path('changekakao',views.changekakao,name='changekakao'), #카카오채팅 바꾸기
+    path('changenick',views.changenick,name='changenick'), #닉네임교체
     path('inputuser',views.inputuser,name='input'), # 유저 등록
     path('playus/<str:gpsX>/<str:gpsY>',views.playus,name='play'), # 놀이 만들기
     path('inputplaydata',views.inputplaydata), #놀이 등록
@@ -35,4 +36,6 @@ urlpatterns = [
     path('findbylist/<str:gpsX>/<str:gpsY>',views.findByList),
     path('userdetail/',views.userhome),
     #path('login/',include('login.urls')),
+    path('inputUserdata/',views.inputuserdata),
+    path('some',views.some),
 ]

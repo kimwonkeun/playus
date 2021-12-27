@@ -28,31 +28,41 @@ def login(request):
         if app==ServerappOrnot : #앱에서만 접속가능
             request.session['uid']=uid #세션 생성            
             # return HttpResponse(request.session['uid'])
-            playerdata=player.objects.get(uniqueid=uid)                
-            p_data=playdata.objects.filter(userid=uid,starttime__gt=timezone.now()).order_by('starttime')              
-            inplay_data=playdata.objects.raw('select playus_playdata.id,title,starttime,detail from playus_playdata,playus_partytable where playus_playdata.id = playus_partytable.playdata_id and playus_partytable.userid="%s" and playus_playdata.starttime > "%s" order by starttime' % (uid,timezone.now()))
-        #inplay_data=playdata.objects.all()
-        #세션 생성
-            context={
-                'playerdata':playerdata,
-                'p_data':p_data,
-                'uid':uid,
-                'inplay_data':inplay_data,
-            }
-            # 유저 데이타 로그인 기록.. 
-            lognow=userlogin.objects.filter(userid=uid,recentlog=datetime.today()) #로그인시 로그인 장소와 위치 기록
-            if lognow.count() == 0:
-                loginData=userlogin()
-                loginData.player=player.objects.get(uniqueid=uid)
-                loginData.userid=uid
-                loginData.recentlog=datetime.today()
-                loginData.recenpos=address
-                loginData.writetime = 1        
-                loginData.save()                         
-            return render(request,'userdetail.html',context)
+            playerdata=player.objects.get(uniqueid=uid)
+            if playerdata.level > 3 :
+                return redirect('/some?address='+address+'&clickuser') #글쓰기 권한설정
+            else :
+                return redirect('/some?address='+address) #글쓰기 권한설정
 
     except player.DoesNotExist:       
         return render(request,'inputUser.html')
+
+def some(request):
+    address=request.GET.get('address')
+    uid=request.session['uid']
+    playerdata=player.objects.get(uniqueid=uid)
+    p_data=playdata.objects.filter(userid=uid,starttime__gt=timezone.now()).order_by('starttime')              
+    inplay_data=playdata.objects.raw('select playus_playdata.id,title,starttime,detail from playus_playdata,playus_partytable where playus_playdata.id = playus_partytable.playdata_id and playus_partytable.userid="%s" and playus_playdata.starttime > "%s" order by starttime' % (uid,timezone.now()))
+    context={
+            'playerdata':playerdata,
+            'p_data':p_data,
+            'uid':uid,
+            'inplay_data':inplay_data,
+            }
+            # 유저 데이타 로그인 기록.. 
+    lognow=userlogin.objects.filter(userid=uid,recentlog=datetime.today()) #로그인시 로그인 장소와 위치 기록
+    if lognow.count() == 0:
+        loginData=userlogin()
+        loginData.player=player.objects.get(uniqueid=uid)
+        loginData.userid=uid
+        loginData.recentlog=datetime.today()
+        loginData.recenpos=address
+        loginData.writetime = 1        
+        loginData.save()
+                           
+    return render(request,'playhome.html',context)
+
+    
 
 def detail(request,pk):
     if request.session['uid']:
@@ -92,13 +102,31 @@ def changekakao(request):
         change.save()
         p_data=playdata.objects.filter(userid=uid)
         context={
-            'playerdata':change,
+            'outdata':change,
             'p_data':p_data,
             'uid':uid,
         }
-        return render(request,'userdetail.html',context)
+        return render(request,'inputuserdata.html',context)
     except player.DoesNotExist:              
         return HttpResponse("앱으로 재접속해 주십시요")
+
+def changenick(request):
+    try:        
+        # if 'uid' not in request.COOKIES:
+        uid=request.session['uid']      
+        change=player.objects.get(uniqueid=uid)
+        change.nickname=request.GET.get('nickname')
+        change.save()
+        p_data=playdata.objects.filter(userid=uid)
+        context={
+            'outdata':change,
+            'p_data':p_data,
+            'uid':uid,
+        }
+        return render(request,'inputuserdata.html',context)
+    except player.DoesNotExist:              
+        return HttpResponse("앱으로 재접속해 주십시요")
+
 
 def inputuser(request):
     uid=request.session['uid'] #앱 접속만 허용
@@ -110,7 +138,8 @@ def inputuser(request):
                 gen=request.POST['inlineRadioOptions']
                 kakao=request.POST['kakaochat']
                 level=1; #기본레벨 마이너스 레벨은 사용금지 유저
-                new_user=player(nickname=nick,uniqueid=uid,gender=gen,kakaochat=kakao,level=level)
+                new_user=player(uniqueid=uid,nickname=nick,gender=gen,kakaochat=kakao,level=level)
+                # return HttpResponse()
                 new_user.save()
                 p_data=playdata.objects.filter(userid=uid)
                 context={
@@ -118,7 +147,7 @@ def inputuser(request):
                     'p_data':p_data,
                     'uid':uid,
                 }        
-                return render(request,'userdetail.html',context)
+                return render(request,'playhome.html',context)
             else:
                 form=userInputForm()
                 return render(request,'inputUser.html',{'form':form,'uid':uid})
@@ -260,7 +289,7 @@ def findByList(request,gpsX,gpsY):
         gpsX=float(gpsX)
         gpsY=float(gpsY)            
         # inplay_data=playdata.objects.raw('select abs(gpsX-%f)+abs(gpsY-%f) as gpsXY, from playus_playdata where playus_playdata.starttime > "%s" order by gpsXY' % (gpsX,gpsY,timezone.now()))
-        inplay_data=playdata.objects.raw('select abs(gpsX-%f)+abs(gpsY-%f) as outXY,* from playus_playdata where playus_playdata.starttime > "%s" order by outXY limit 20' % (gpsX,gpsY,timezone.now()))
+        inplay_data=playdata.objects.raw('select abs(gpsX-%f)+abs(gpsY-%f) as outXY,title,id,starttime,detail from playus_playdata where playus_playdata.starttime > "%s" order by outXY limit 20' % (gpsX,gpsY,timezone.now()))
         context={
         'outputTable':inplay_data,
         'gpsX':gpsX,
@@ -284,4 +313,12 @@ def userhome(request):
        'uid':uid,
        'inplay_data':inplay_data,
         }
-    return render(request,'userdetail.html',context)
+    return render(request,'playhome.html',context)
+
+def inputuserdata(request):
+    uid=request.session['uid'] 
+    playerdata=player.objects.get(uniqueid=uid)
+    context={
+        'outdata':playerdata,
+    }
+    return render(request,"inputuserdata.html",context)
