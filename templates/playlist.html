@@ -89,7 +89,8 @@
         border-radius: 15px 0px 0px 0px;
         padding-left: 7%;
         font-size: large;
-        color:coral        
+        color:coral;        
+        overflow-x:auto;
     }
     .inplaycontent{
         background-color: seashell;
@@ -122,16 +123,25 @@
         z-index: 1;    
 
     }
+      
+a {  
+  font-weight: 500;
+  font-style: normal;
+  color: rgba(0, 0, 0, 0.7);
+  transition: all 1s ease-out;  
+  text-decoration: none;  
+}
+
+ a:hover {
+  color: red; 
+ }
 </style>
 <body>
 
 {% load mathfilters %}
+<p class="label"> 가까운 곳</p>
 {% for playdata in outputTable %}
-  {% if forloop.counter == 1 %}<p class="label">{{playdata.outXY|mul:70|floatformat}} km</p>{% endif %}
-  {% if forloop.counter == 5 %}<p class="label">{{playdata.outXY|mul:70|floatformat}} km</p>{% endif %}
-  {% if forloop.counter == 9 %}<p class="label">{{playdata.outXY|mul:70|floatformat}} km</p>{% endif %}
-  {% if forloop.counter == 13 %}<p class="label">{{playdata.outXY|mul:70|floatformat}} km</p>{% endif %}
-  {% if forloop.counter == 15 %}<p class="label">{{playdata.outXY|mul:70|floatformat}} km</p>{% endif %}
+  {% if not forloop.counter|mod:3 %}<p class="label">{{playdata.outXY|mul:70|floatformat}} km 이상</p>{% endif %}
 
 <a href="/detail/{{playdata.id}}">
     <div class="inplay">

@@ -36,6 +36,8 @@ urlpatterns = [
     path('findbylist/<str:gpsX>/<str:gpsY>',views.findByList),
     path('userdetail/',views.userhome),
     #path('login/',include('login.urls')),
-    path('inputUserdata/',views.inputuserdata),
-    path('some',views.some),
+    path('inputUserdata/',views.inputuserdata,name='inuserdata'),
+    path('some',views.some),    
+    path('accounts/',views.kakao_login,name='kakao_login'),
+    path('oauth/',views.oauth,name='oauth'),
 ]

@@ -1,6 +1,6 @@
 from datetime import time
 from django.http.request import HttpRequest
-from django.http.response import HttpResponse
+from django.http.response import HttpResponse,JsonResponse
 from django.shortcuts import render
 from .models import *
 from django.utils import timezone
@@ -8,10 +8,12 @@ from datetime import datetime
 from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
 from playus.forms import userInputForm,playInputForm
-
+import requests
+import json
 # Create your views here.
-def index(request):    
-    return render(request,'testmap.html')
+def index(request):
+    date=datetime.now()
+    return HttpResponse(date)
 
 # def test(request):
 #     return render(request,'inputUser.html',{'uid':'7',})
@@ -59,6 +61,10 @@ def some(request):
         loginData.recenpos=address
         loginData.writetime = 1        
         loginData.save()
+    else:
+        logupdate=userlogin.objects.get(userid=uid,recentlog=datetime.today())
+        logupdate.recenpos=address
+        logupdate.save()
                            
     return render(request,'playhome.html',context)
 
@@ -239,29 +245,19 @@ def inputgossip(request,gossip,pk):
     try:
         uid=request.session['uid']
         playerdata=player.objects.get(uniqueid=uid)
-
+        #잡담 저장구문
         inputgossip=pdatagossip()
         inputgossip.p_data=playdata.objects.get(id=pk)
         inputgossip.gossip=gossip
         inputgossip.nickname=playerdata.nickname
         inputgossip.userid=uid
-        inputgossip.save()
-
-        
-        p_data=playdata.objects.get(id=pk)
-        partyindata=partytable.objects.filter(playdata=p_data)
-        gossipdata=pdatagossip.objects.filter(p_data=p_data)                
+        inputgossip.save() # 잡담이 저장되는 구문        
+        print(gossip)
         context={
-            'playdata':p_data,
-            'partydata':partyindata,
-            'gossipdata':gossipdata,
-            'nick':playerdata.nickname,
-            'gender':playerdata.gender,
-            'userid':uid,
-            'playdata':p_data,
+            'gossip':gossip,
+            'nickname':playerdata.nickname,            
         }
-        return render(request,"playdetail.html",context)            
-
+        return JsonResponse(context) 
     except player.DoesNotExist:
         return HttpResponse('앱으로 재접속해 주세요')
 
@@ -322,3 +318,33 @@ def inputuserdata(request):
         'outdata':playerdata,
     }
     return render(request,"inputuserdata.html",context)
+
+def oauth(request):
+    code=request.GET['code']
+    client_id='68c1537331b0409bb25b523b593af181'
+    redirect_uri='http://152.67.213.106/oauth'
+    access_token_uri="https://kauth.kakao.com/oauth/token?grant_type=authorization_code&"
+    
+    access_token_uri +="client_id="+client_id
+    access_token_uri +="&redirect_uri="+redirect_uri
+    access_token_uri +="&code="+code
+
+    access_token_uri_data=requests.get(access_token_uri)
+    json_data=access_token_uri_data.json()
+    access_token=json_data['access_token']  
+    user_profile_info_uri="https://kapi.kakao.com/v2/user/me?access_token="  
+    user_profile_info_uri+=str(access_token)
+
+    user_profile_info_data=requests.get(user_profile_info_uri)
+    user_json_data=user_profile_info_data.json()
+    user_email = user_json_data['kakao_account']['email']
+    return redirect('inuserdata')
+
+def kakao_login(request):
+    login_uri='https://kauth.kakao.com/oauth/authorize?'
+    client_id='68c1537331b0409bb25b523b593af181'
+    redirect_uri='http://152.67.213.106/oauth'
+    login_uri +='client_id='+ client_id
+    login_uri +='&redirect_uri='+redirect_uri
+    login_uri +='&response_type=code&scope=account_email'
+    return redirect(login_uri)

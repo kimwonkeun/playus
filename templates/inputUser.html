@@ -61,6 +61,18 @@
 <script>
    $(document).ready(function() {
 	$("#info").modal("show");});
+
+  function joinfromCheck(){
+    let kakaocheck=document.getElementById("kakao").value;   
+    const validcheckstring="https://open.kakao.com/o/";
+    if(kakaocheck.indexOf(validcheckstring)==0){ 
+      document.join_form.submit();     
+    }
+    else{
+      document.getElementById("kakao").value='';
+      $("#kakao").attr('placeholder','카카오 채팅을 제대로 넣어주세요');
+    }
+  }
 </script>
 <div class="modal fade" id="info" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">  
     <div class="modal-dialog" role="document">
@@ -80,7 +92,7 @@
     </div>
   </div>
 
-  <form action="/inputuser" method="post">    
+  <form action="/inputuser" name="join_form" method="post">    
     {% csrf_token %} 
     <div class="card shadow">
         <div class="card-header">
@@ -89,7 +101,7 @@
         <ul class="list-group list-group-flush">         
           <li class="list-group-item"></li>
           
-          <li class="list-group-item"><input class="form-control" type="text" placeholder="카카오 오픈채팅을 등록해 주세요" name="kakaochat" ></li>
+          <li class="list-group-item"><input class="form-control" type="text" placeholder="카카오 오픈채팅을 등록해 주세요" name="kakaochat" id="kakao" ></li>
           <li class="list-group-item"><a target="_blank" href="kakaoopen://home" class="btn btn-secondary btn-block">오픈채팅이 없으신 분을 위해서 오픈채팅 개설하기</a></li>
           <li class="list-group-item">
             <div class="form-check form-check-inline">
@@ -103,10 +115,11 @@
           </li>
         </ul>
         <div class="card-footer">
-            <button type="submit" class="btn btn-danger btn-lg btn-block">등록하기</button>
+            <button type="button" class="btn btn-danger btn-lg btn-block" onclick="joinfromCheck()">등록하기</button>
         </div>
     </div>
   </form>
+  
 
 </body>
 <footer>

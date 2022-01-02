@@ -26,6 +26,13 @@ class userlogin(models.Model):
 class playerdetail(models.Model):
     player = models.ForeignKey(player,on_delete=models.CASCADE)
     birth = models.DateField()
+    kakaoemail=models.CharField(max_length=100)
+    realname=models.CharField(max_length=20)
+    picture=models.FileField()
+
+    def __str__(self):
+        return self.realname
+    
 
 class playdata(models.Model):
     userid = models.CharField(max_length=50)

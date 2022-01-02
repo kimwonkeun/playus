@@ -6,26 +6,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>놀이정보</title>
 </head>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 <script>
     function inputgossip(){
-        var gossipdata=document.getElementById('gossiptext').value;
+        let gossipdata_2=document.getElementById('gossiptext').value;
+        let gossipdata=gossipdata_2.replaceAll('?','~');
             if(gossipdata!=null){
-                window.location.href = "/inputgossip/" + gossipdata+"/"+{{playdata.pk}};
+                $.ajax({
+                    url:"/inputgossip/"+ gossipdata+"/{{playdata.pk}}",
+                    type:'GET',
+                    success:function(response){        
+                        let outgossip=response['gossip'].replace('~','?');
+                        $("#gossipdata").after('<h6 class="gossipdetail">'+outgossip+'<br>-'+response['nickname']+'</h6>');
+                        document.getElementById('gossiptext').value='';
+                    }                    
+                });
             }
             else{}
     }
 
 </script>
 <style>
+    body{
+        background-color: rgb(170, 170, 170);        
+        margin-top:3px;
+        margin-left:1px;
+        margin-right:1px;
+    }
     .playdetail{
         background-color: rgb(255, 255, 255);
         border:solid 1px grey;
-        border-radius: 20px 10px 5px 3px;
+        border-radius: 2px;
         box-shadow: 2px 2px 2px grey;                
+    }
+    
+    .otherplay{
+        background-color: rgb(255, 255, 255);
+        border:solid 1px grey;
+        border-radius: 10px;
+        box-shadow: 2px 2px 2px grey;                
+        padding-top:10px;
+        text-align: center;                
+        height:2rem;
+        font-size: small;
     }
     .title{
         background-color: rgb(255, 230, 230);
-        border-radius: 20px 10px 0 0;
+        border-radius: 2px 2px 0 0;
         text-align: center;                
     }
     .when{        
@@ -175,14 +202,16 @@
         <a href="kakaomap://look?p={{playdata.gpsX}},{{playdata.gpsY}}">가는길 확인</a></div>
         <div class="gossip">
             <input class="gossipinput" type="text"  placeholder="알림사항을 넣어주세요" id="gossiptext" onchange="inputgossip()">
-            <div>
+            <div id="gossipdata">
             {% for output in gossipdata %}
                 <h6 class="gossipdetail">{{output.gossip}}<br>-{{output.nickname}}</h6>            
             {% endfor %}
             </div>
         </div>    
     </div>
-    
+    <br>
+    <div class="otherplay">혼자서 놀지 말고 같이 놀아봅시다.</div>   
+    <div class="otherplay">이 놀이 근처의 놀이들이 보여질 예정입니다.</div>    
     
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=d9a09f146a2fd8158e849d8f01f841c8"></script>
 
